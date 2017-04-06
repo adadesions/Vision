@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.8)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
+include_directories(include "./include" "./src")
+project( Vision )
+find_package( OPENCV REQUIRED )
+add_executable(${PROJECT_NAME} ./src/workspace.cpp)
+target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )

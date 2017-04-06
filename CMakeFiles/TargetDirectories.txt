@@ -1,0 +1,3 @@
+/Users/adacodeio/GitHub/Vision/CMakeFiles/rebuild_cache.dir
+/Users/adacodeio/GitHub/Vision/CMakeFiles/edit_cache.dir
+/Users/adacodeio/GitHub/Vision/CMakeFiles/Vision.dir
