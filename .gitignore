@@ -9,3 +9,10 @@
 .DS_Store
 .DS_Store?
 ._*
+
+# CMake #
+#########
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+CMakeFiles
