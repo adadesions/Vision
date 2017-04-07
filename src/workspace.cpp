@@ -49,7 +49,7 @@ int main(int argc, char *agrv[])
 	imshow("LocalAverage", reducedMean);
 	
 	//MedianFilter
-	Mat median = medianFilter(noiseImg, 21);
+	Mat median = medianFilter(noiseImg, 3);
 	imshow("Median", median);
 	waitKey(0);
 	return 0;

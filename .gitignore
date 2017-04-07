@@ -1,0 +1,11 @@
+# Compiled source #
+###################
+*.swo
+*.swp
+*.o
+
+# OS Generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
