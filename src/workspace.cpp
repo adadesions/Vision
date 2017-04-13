@@ -22,6 +22,7 @@
 
 using namespace std;
 using namespace cv;
+using namespace adaVision;
 
 int main(int argc, char *agrv[])
 {
@@ -38,16 +39,16 @@ int main(int argc, char *agrv[])
 	//Sobel operator
 	Mat sobel_img = sobel(img);
 	imshow("G", sobel_img);
-	
+
 	//Generate Noise Image
-	Mat noiseImg = saltPepperNoise(img, 5); 
+	Mat noiseImg = saltPepperNoise(img, 5);
 
 	//LocalAverage Operation
 	Mat reducedMean = localAverage(noiseImg, 5);
 
 	imshow("Noise Image", noiseImg);
 	imshow("LocalAverage", reducedMean);
-	
+
 	//MedianFilter
 	Mat median = medianFilter(noiseImg, 3);
 	imshow("Median", median);
