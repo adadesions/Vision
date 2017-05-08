@@ -58,7 +58,7 @@ void on_trackbar(int, void*)
 			if(intensity >= 255)
 			{
 				Point center(col, row);
-				circle(dst, center,	1, Scalar(0,0,255), 0);
+//				circle(dst, center,	1, Scalar(0,0,255), 0);
 				pointStore.push_back(center);
 			}
 		}
