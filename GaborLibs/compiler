@@ -1,0 +1,4 @@
+#!/bin/bash
+cmake . || exit 1
+make || exit 1
+./build/GaborLibs
