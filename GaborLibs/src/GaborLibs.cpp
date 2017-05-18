@@ -18,15 +18,32 @@
 
 #include <iostream>
 #include <vector>
+#include "openADA.hpp"
 #include "opencv2/opencv.hpp"
 
 using namespace std;
 using namespace cv;
+using namespace ada;
 
 int main(int argc, char* argv[])
 {
+	Ada c1 = Ada(100, 90);
+	Factor c2 = Factor(300, 200);
+	c1.getHp();
+	c2.getHp();
+
 	Mat src = imread("./data/brain1.jpg", 0);
-	imshow("Src", src);
-	waitKey(0);
+	Mat dst(src.size(), src.type());
+	int data[] = {10, 100, 1000, 10000};
+	int *pix;
+
+	pix = data;
+
+	for(;;){
+		if( !*pix )
+			break;
+		cout << *pix << " ";
+		pix++;
+	}
 	return 0;
 }
