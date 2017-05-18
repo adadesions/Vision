@@ -18,7 +18,20 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <openAda.hpp>
+
+using namespace std;
+using namespace cv;
 
 int main(int argc, char *argv[]){
+	Mat src = imread("./data/brain1.jpg", 0);
+	resize(src, src, Size(400, 440));	
+
+	opa::Gradient test = opa::Gradient(src);
+	imshow("gx", test.gxImg);
+	imshow("gy", test.gyImg);
+	imshow("Grad", test.gradImg);
+
+	waitKey(0);
 	return 0;
 }
