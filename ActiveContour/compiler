@@ -1,4 +1,4 @@
 #/bin/bash
 cmake . || exit 1
-make
+make || exit 1
 ./build/ActiveContour
