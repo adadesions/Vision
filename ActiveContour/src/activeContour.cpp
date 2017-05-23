@@ -47,12 +47,11 @@ int main(int argc, char *argv[]){
 	src = imread("./data/brain1.jpg", 1);
 	resize(src, src, Size(400, 440));
 	painted = src.clone();
+	Mat markedImg = src.clone();
 
 	namedWindow("Src", WINDOW_AUTOSIZE);
 	moveWindow("Src",0, 0);
 	setMouseCallback("Src", onMouseClick, 0);
-	// circle(src, Point(180, 27), 2, Scalar(0, 0, 255), -1);
-	imshow("Src", src);
 
 	//Testing ctrl points
 	Point tcp[] = {
@@ -67,6 +66,11 @@ int main(int argc, char *argv[]){
 		Point(286, 50)
 	};
 	vector<Point> testCrtlPoints( begin(tcp), end(tcp) );
+	for(int i = 0; i < testCrtlPoints.size(); i++){
+		circle(markedImg, testCrtlPoints[i], 4, Scalar(0, 0, 255), -1);
+	}
+	// circle(markedImg, testCrtlPoints[0], 4, Scalar(0, 0, 255), -1);
+	imshow("Src", markedImg);
 
 	// Test Snake Object
 	Mat graySrc;
@@ -76,7 +80,7 @@ int main(int argc, char *argv[]){
 	Mat energyMap = naka.energy(testCrtlPoints[0], Size(15, 15));
 	imshow("Snake Gradient", naka.getGradient());
 	imshow("Energy Map", energyMap);
-	cout << energyMap << endl;
+	cout << "Energy\n" << energyMap << endl;
 
 	waitKey(0);
 	return 0;
