@@ -16,15 +16,15 @@ namespace opa {
       cv::Mat srcImg;
       cv::Mat gradImg;
       cv::Size boundary;
-      double meanPoints;
 
       double calMeanPairs( std::vector<cv::Point> ctrlPoints );
       double continuity( cv::Point curPt,  cv::Point nextPt, double meanPairs, double alpha );
-      double curvature( cv::Point curPt,  cv::Point prevPt, cv::Point nextPt, double beta );
+      double curvature( cv::Point curPt,  cv::Point prevPt, cv::Point nextPt, double meanPairs, double beta );
       double calInternalEnergy( cv::Point curPt,  cv::Point prevPt, cv::Point nextPt, double alpha, double beta, double meanPairs );
       double calExternalEnergy( cv::Mat &gMap, cv::Point pt );
       cv::Mat energy( cv::Point ctrlPoint, cv::Size boundary );
       cv::Point minEnergy( cv::Mat &energyMap );
+      void calSnake();
 
     public:
       Snake( cv::Mat &src, std::vector<cv::Point> ctrlPoints, cv::Size boundary );
@@ -47,12 +47,12 @@ namespace opa {
   // Private Method
   double Snake::calExternalEnergy( cv::Mat &gMap, cv::Point pt ){
     int magnitude = (int)gMap.at<uchar>(pt.x, pt.y);
-    return (double)std::exp(-magnitude);
+    return -magnitude;
   }
 
   double Snake::calInternalEnergy( cv::Point curPt,  cv::Point prevPt, cv::Point nextPt, double alpha, double beta, double meanPairs ){
     double cont = continuity( curPt, nextPt, meanPairs, alpha);
-    double curve = curvature( curPt, prevPt, nextPt, beta );
+    double curve = curvature( curPt, prevPt, nextPt, meanPairs, beta );
     return cont + curve;
   }
 
@@ -72,34 +72,28 @@ namespace opa {
   double Snake::continuity( cv::Point curPt,  cv::Point nextPt, double meanPairs, double alpha){
     double dx = std::pow( curPt.x - nextPt.x, 2 );
     double dy = std::pow( curPt.y - nextPt.y, 2 );
-    return alpha * std::pow((dx + dy)/meanPairs, 2 );
+    return alpha * (double)(dx + dy)/meanPairs;
   }
 
-  double Snake::curvature( cv::Point curPt,  cv::Point prevPt, cv::Point nextPt, double beta ){
+  double Snake::curvature( cv::Point curPt,  cv::Point prevPt, cv::Point nextPt, double meanPairs, double beta ){
     double dx2 = std::pow( prevPt.x - 2*curPt.x + nextPt.x, 2 );
     double dy2 = std::pow( prevPt.y - 2*curPt.y + nextPt.y, 2 );
     return beta * ( dx2 + dy2 );
   }
 
   cv::Point Snake::minEnergy( cv::Mat &energyMap ){
-    double min[3] = {1000, 1000, 1000};
     double minimum = 0;
-    std::vector<cv::Point> minPoint;
+    cv::Point minPoint;
 
     for(int row = 0; row < energyMap.rows; row++){
       for(int col = 0; col < energyMap.cols; col++){
         double local = energyMap.at<double>(col, row);
-        if( local < min[0] ){
-          if( min[1] <= min[0] ){
-            min[2] = min[1];
-            min[1] = min[0];
-          }
-          min[0] = local;
-          minPoint.push_back( cv::Point(col, row) );
+        if( local < minimum ){
+          minPoint = cv::Point(col, row);
         }
       }
     }
-    return minPoint.back();
+    return minPoint;
   }
 
   cv::Mat Snake::energy( cv::Point ctrlPoint, cv::Size boundary){
@@ -132,20 +126,7 @@ namespace opa {
     return energyMap;
   }
 
-  // Public Method
-  cv::Mat Snake::getGradient( void ){
-    return this->gradImg;
-  }
-
-  void Snake::updateCtrlPoints( std::vector<cv::Point> newCtrlPt ){
-    this->ctrlPoints.clear();
-    this->ctrlPoints = newCtrlPt;
-    for(int i = 0; i < this->ctrlPoints.size(); i++){
-      std::cout << ctrlPoints[i] << std::endl;
-    }
-  }
-
-  void Snake::snaking(){
+  void Snake::calSnake() {
     //Init Energy Map
     for(int i = 0; i < ctrlPoints.size(); i++){
       cv::Mat energyMap = this->energy( ctrlPoints[i], this->boundary );
@@ -166,9 +147,29 @@ namespace opa {
 
     cv::Mat snaking = this->srcImg.clone();
     for(int i = 0; i < this->ctrlPoints.size(); i++){
-      cv::circle(snaking, this->ctrlPoints[i], 2, cv::Scalar(255,255,255), -1);
+      cv::circle(snaking, this->ctrlPoints[i], 4, cv::Scalar(255,255,255), -1);
     }
     cv::imshow("Snaking", snaking);
+  }
+
+  // Public Method
+  cv::Mat Snake::getGradient( void ){
+    return this->gradImg;
+  }
+
+  void Snake::updateCtrlPoints( std::vector<cv::Point> newCtrlPt ){
+    this->ctrlPoints.clear();
+    this->ctrlPoints = newCtrlPt;
+    for(int i = 0; i < this->ctrlPoints.size(); i++){
+      std::cout << ctrlPoints[i] << std::endl;
+    }
+  }
+
+  void Snake::snaking(){
+    for(int i = 0; i < 20; i++){
+  		this->calSnake();
+  		cv::waitKey(500);
+  	}
   }
 
 }
