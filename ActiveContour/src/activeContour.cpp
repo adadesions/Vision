@@ -65,22 +65,22 @@ int main(int argc, char *argv[]){
 		Point(348, 143),
 		Point(286, 50)
 	};
-	vector<Point> testCrtlPoints( begin(tcp), end(tcp) );
-	for(int i = 0; i < testCrtlPoints.size(); i++){
-		circle(markedImg, testCrtlPoints[i], 4, Scalar(0, 0, 255), -1);
+	vector<Point> testCtrlPoints( begin(tcp), end(tcp) );
+	for(int i = 0; i < testCtrlPoints.size(); i++){
+		circle(markedImg, testCtrlPoints[i], 2, Scalar(0, 0, 255), -1);
 	}
-	// circle(markedImg, testCrtlPoints[0], 4, Scalar(0, 0, 255), -1);
+	// circle(markedImg, testCtrlPoints[0], 4, Scalar(0, 0, 255), -1);
 	imshow("Src", markedImg);
 
 	// Test Snake Object
 	Mat graySrc;
 	cvtColor(src, graySrc, CV_BGR2GRAY);
-	opa::Snake naka = opa::Snake( graySrc );
-	Rect roi(Point(0, 0), Size(15, 15));
-	Mat energyMap = naka.energy(testCrtlPoints[0], Size(15, 15));
-	imshow("Snake Gradient", naka.getGradient());
-	imshow("Energy Map", energyMap);
-	cout << "Energy\n" << energyMap << endl;
+	opa::Snake naka = opa::Snake( graySrc, testCtrlPoints, Size( 9, 9 ));
+	for(int i = 0; i < 10; i++){
+		naka.snaking();
+		waitKey(500);
+	}
+
 
 	waitKey(0);
 	return 0;
