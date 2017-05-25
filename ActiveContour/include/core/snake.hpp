@@ -16,6 +16,8 @@ namespace opa {
       cv::Mat srcImg;
       cv::Mat gradImg;
       cv::Size boundary;
+      double curEnergy;
+      double prevEnergy;
 
       double calMeanPairs( std::vector<cv::Point> ctrlPoints );
       double continuity( cv::Point curPt,  cv::Point nextPt, double meanPairs, double alpha );
@@ -42,6 +44,8 @@ namespace opa {
     this->gradImg = grad.gradImg;
     this->ctrlPoints = ctrlPoints;
     this->boundary = boundary;
+    this->curEnergy = 0;
+    this->prevEnergy = 0;
   }
 
   // Private Method
@@ -82,17 +86,19 @@ namespace opa {
   }
 
   cv::Point Snake::minEnergy( cv::Mat &energyMap ){
-    double minimum = 0;
+    double minimum = 1000;
     cv::Point minPoint;
 
     for(int row = 0; row < energyMap.rows; row++){
       for(int col = 0; col < energyMap.cols; col++){
         double local = energyMap.at<double>(col, row);
         if( local < minimum ){
-          minPoint = cv::Point(col, row);
+          minimum = local;
+          minPoint =  cv::Point(col, row);
         }
       }
     }
+    this->curEnergy += minimum;
     return minPoint;
   }
 
@@ -166,8 +172,20 @@ namespace opa {
   }
 
   void Snake::snaking(){
-    for(int i = 0; i < 20; i++){
+    for(int i = 0; i < 100; i++){
   		this->calSnake();
+      //debug
+      double curEnergy = std::abs(this->curEnergy);
+      double prevEnergy = std::abs(this->prevEnergy);
+      std::cout << "i : " << i << std::endl;
+      std::cout << "curEnergy : " << curEnergy << std::endl;
+      std::cout << "prevEnergy : " << prevEnergy << std::endl;
+      if( curEnergy - prevEnergy < 0.1 && i > 0 ){
+        std::cout<< "Break" << std::endl;
+        break;
+      }
+      this->prevEnergy = this->curEnergy;
+      this->curEnergy = 0;
   		cv::waitKey(500);
   	}
   }

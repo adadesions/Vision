@@ -78,11 +78,11 @@ int main(int argc, char *argv[]){
 		 Point(230, 400)
 	 };
 
-	vector<Point> testCtrlPoints( begin(tcp2), end(tcp2) );
-	for(int i = 0; i < testCtrlPoints.size(); i++){
-		circle(painted, testCtrlPoints[i], 2, Scalar(0, 0, 255), -1);
-	}
-	ctrlPoints = testCtrlPoints;
+	// vector<Point> testCtrlPoints( begin(tcp2), end(tcp2) );
+	// for(int i = 0; i < testCtrlPoints.size(); i++){
+	// 	circle(painted, testCtrlPoints[i], 2, Scalar(0, 0, 255), -1);
+	// }
+	// ctrlPoints = testCtrlPoints;
 
 	// Test Snake Object
 	for(;;){
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
 		if( ctrlPoints.size() >= 9){
 			Mat graySrc;
 			cvtColor(src, graySrc, CV_BGR2GRAY);
-			opa::Snake naka = opa::Snake( graySrc, ctrlPoints, Size( 19,19 ));
+			opa::Snake naka = opa::Snake( graySrc, ctrlPoints, Size( 21,21 ));
 			naka.snaking();
 			break;
 		}
