@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
 		if( ctrlPoints.size() >= 9){
 			Mat graySrc;
 			cvtColor(src, graySrc, CV_BGR2GRAY);
-			opa::Snake naka = opa::Snake( graySrc, ctrlPoints, Size( 21,21 ));
+			opa::Snake naka = opa::Snake( graySrc, ctrlPoints, Size( 15, 15 ));
 			naka.snaking();
 			break;
 		}
