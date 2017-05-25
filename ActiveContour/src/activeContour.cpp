@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
 	Mat graySrc;
 	cvtColor(src, graySrc, CV_BGR2GRAY);
 	opa::Snake naka = opa::Snake( graySrc, testCtrlPoints, Size( 9, 9 ));
-	for(int i = 0; i < 10; i++){
+	for(int i = 0; i < 15; i++){
 		naka.snaking();
 		waitKey(500);
 	}

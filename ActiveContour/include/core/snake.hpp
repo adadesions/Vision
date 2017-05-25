@@ -37,18 +37,11 @@ namespace opa {
 
   // Constructor
   Snake::Snake( cv::Mat &src, std::vector<cv::Point> ctrlPoints, cv::Size boundary){
-
     Gradient grad = Gradient( src );
     this->srcImg = src;
     this->gradImg = grad.gradImg;
     this->ctrlPoints = ctrlPoints;
     this->boundary = boundary;
-
-    //Init Energy Map
-    for(int i = 0; i < ctrlPoints.size(); i++){
-      cv::Mat energyMap = this->energy( ctrlPoints[i], this->boundary );
-      this->energyMapStore.push_back( energyMap );
-    }
   }
 
   // Private Method
@@ -130,10 +123,10 @@ namespace opa {
         curPt = cv::Point( col, row );
         prevPt = cv::Point( col - 1, row - 1 );
         nextPt = cv::Point( col + 1, row + 1);
-        double alpha = 0.5, beta = 0.5;
+        double alpha = 1, beta = 1;
         double Eint = calInternalEnergy( curPt, prevPt, nextPt,  alpha, beta, meanPairs);
         double Eext = calExternalEnergy( gMap, cv::Point( col, row ) );
-        energyMap.at<double>(col, row) = Eint + Eext;
+        energyMap.at<double>(row, col) = Eint + Eext;
       }
     }
     return energyMap;
@@ -153,6 +146,11 @@ namespace opa {
   }
 
   void Snake::snaking(){
+    //Init Energy Map
+    for(int i = 0; i < ctrlPoints.size(); i++){
+      cv::Mat energyMap = this->energy( ctrlPoints[i], this->boundary );
+      this->energyMapStore.push_back( energyMap );
+    }
     // Find min energy for move each ctrlPoints
     int scale = (this->boundary.width - 1)/2;
     std::vector<cv::Point> tempCtrl;
@@ -164,6 +162,8 @@ namespace opa {
       tempCtrl.push_back(tPt);
     }
     updateCtrlPoints( tempCtrl );
+    this->energyMapStore.clear();
+
     cv::Mat snaking = this->srcImg.clone();
     for(int i = 0; i < this->ctrlPoints.size(); i++){
       cv::circle(snaking, this->ctrlPoints[i], 2, cv::Scalar(255,255,255), -1);
