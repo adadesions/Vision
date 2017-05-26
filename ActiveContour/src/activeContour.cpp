@@ -28,19 +28,29 @@ using namespace cv;
 Mat src;
 Mat painted;
 vector<Point> ctrlPoints;
+bool drawing = false;
 
 static void onMouseClick(int event, int x, int y, int, void*){
-	if( event != EVENT_LBUTTONDOWN || ctrlPoints.size() >= 9){
-		if( ctrlPoints.size() >= 9 ){
-			cout << ctrlPoints << endl;
-		}
+	// if( event != EVENT_LBUTTONDOWN || ctrlPoints.size() >= 9){
+	// 	if( ctrlPoints.size() >= 9 ){
+	// 		cout << ctrlPoints << endl;
+	// 	}
+	// 	return;
+	// }
+	if( event != EVENT_LBUTTONDOWN  && event != EVENT_MOUSEMOVE && event != EVENT_LBUTTONDBLCLK) {
 		return;
 	}
 
-	Mat target = painted;
-	circle( target, Point(x, y), 2, Scalar(0, 0, 255), -1);
-	ctrlPoints.push_back(Point(x, y));
-	imshow("Src", target);
+	if(event == EVENT_LBUTTONDBLCLK ){
+		drawing = !drawing;
+	}
+	if( drawing || event == EVENT_LBUTTONDOWN ){
+		Mat target = painted;
+		circle( target, Point(x, y), 2, Scalar(0, 0, 255), -1);
+		ctrlPoints.push_back(Point(x, y));
+		imshow("Src", target);
+	}
+
 }
 
 int main(int argc, char *argv[]){
@@ -89,16 +99,16 @@ int main(int argc, char *argv[]){
 		imshow("Src", painted);
 		waitKey(0);
 
-		if( ctrlPoints.size() >= 9){
+		// if( ctrlPoints.size() >= 9){
 			Mat graySrc;
 			cvtColor(src, graySrc, CV_BGR2GRAY);
 			opa::Snake naka = opa::Snake( graySrc, ctrlPoints, Size( 15, 15 ));
 			naka.snaking();
 			break;
-		}
-		else{
-			cout << "Need more control point" << endl;
-		}
+		// }
+		// else{
+		// 	cout << "Need more control point" << endl;
+		// }
 	}
 	waitKey(0);
 	return 0;

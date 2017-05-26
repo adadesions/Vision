@@ -154,6 +154,7 @@ namespace opa {
     cv::Mat snaking = this->srcImg.clone();
     for(int i = 0; i < this->ctrlPoints.size(); i++){
       cv::circle(snaking, this->ctrlPoints[i], 4, cv::Scalar(255,255,255), -1);
+      cv::line(snaking, ctrlPoints[i], i+1 >= ctrlPoints.size() ? ctrlPoints[0] : ctrlPoints[i+1], cv::Scalar(255,255,255), 1);
     }
     cv::imshow("Snaking", snaking);
   }
@@ -180,7 +181,7 @@ namespace opa {
       std::cout << "i : " << i << std::endl;
       std::cout << "curEnergy : " << curEnergy << std::endl;
       std::cout << "prevEnergy : " << prevEnergy << std::endl;
-      if( curEnergy - prevEnergy < 0.1 && i > 0 ){
+      if( curEnergy - prevEnergy < 0.01 && i > 0 ){
         std::cout<< "Break" << std::endl;
         break;
       }
