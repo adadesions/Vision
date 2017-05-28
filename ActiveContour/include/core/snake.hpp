@@ -26,15 +26,15 @@ namespace opa {
       double calExternalEnergy( cv::Mat &gMap, cv::Point pt );
       cv::Mat energy( cv::Point ctrlPoint, cv::Size boundary );
       cv::Point minEnergy( cv::Mat &energyMap );
+      void updateCtrlPoints( std::vector<cv::Point> newCtrlPt );
       void calSnake();
+      std::vector<cv::Point> sortCtrlPoints( std::vector<cv::Point> ctrlPoints );
 
     public:
       Snake( cv::Mat &src, std::vector<cv::Point> ctrlPoints, cv::Size boundary );
       ~Snake( void ) {};
-      cv::Mat getGradient( void );
-      void updateCtrlPoints( std::vector<cv::Point> newCtrlPt );
       void snaking();
-
+      cv::Mat getGradient( void );
   };
 
   // Constructor
@@ -42,13 +42,34 @@ namespace opa {
     Gradient grad = Gradient( src );
     this->srcImg = src;
     this->gradImg = grad.gradImg;
-    this->ctrlPoints = ctrlPoints;
+    this->ctrlPoints = ctrlPoints; //sortCtrlPoints( ctrlPoints );
     this->boundary = boundary;
     this->curEnergy = 0;
     this->prevEnergy = 0;
   }
 
   // Private Method
+  std::vector<cv::Point> Snake::sortCtrlPoints( std::vector<cv::Point> ctrlPoints ){
+      std::vector<cv::Point> sortedStore;
+      for(int i = ctrlPoints.size(); i < 0; i--){
+        int min = 3000000;
+        int index = 0;
+        cv::Point minPoint;
+        for(int j = 0; j < ctrlPoints.size(); j++){
+          int d = std::pow(ctrlPoints[j].x, 2) + std::pow(ctrlPoints[j].y, 2);
+          if( d < min){
+            min = d;
+            minPoint = ctrlPoints[j];
+            index = j;
+          }
+          std::cout << " d : " << d << std::endl;
+        }
+        sortedStore.push_back( minPoint );
+        ctrlPoints.erase( ctrlPoints.begin() + index );
+      }
+      return sortedStore;
+  }
+
   double Snake::calExternalEnergy( cv::Mat &gMap, cv::Point pt ){
     int magnitude = (int)gMap.at<uchar>(pt.x, pt.y);
     return -magnitude;
@@ -123,7 +144,7 @@ namespace opa {
         curPt = cv::Point( col, row );
         prevPt = cv::Point( col - 1, row - 1 );
         nextPt = cv::Point( col + 1, row + 1);
-        double alpha = 1, beta = 1;
+        double alpha = 0.1, beta = 0.5;
         double Eint = calInternalEnergy( curPt, prevPt, nextPt,  alpha, beta, meanPairs);
         double Eext = calExternalEnergy( gMap, cv::Point( col, row ) );
         energyMap.at<double>(row, col) = Eint + Eext;
@@ -173,7 +194,7 @@ namespace opa {
   }
 
   void Snake::snaking(){
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < 1000; i++){
   		this->calSnake();
       //debug
       double curEnergy = std::abs(this->curEnergy);

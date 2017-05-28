@@ -87,28 +87,16 @@ int main(int argc, char *argv[]){
 		 Point(322, 346),
 		 Point(230, 400)
 	 };
-
-	// vector<Point> testCtrlPoints( begin(tcp2), end(tcp2) );
-	// for(int i = 0; i < testCtrlPoints.size(); i++){
-	// 	circle(painted, testCtrlPoints[i], 2, Scalar(0, 0, 255), -1);
-	// }
-	// ctrlPoints = testCtrlPoints;
-
-	// Test Snake Object
+	
 	for(;;){
 		imshow("Src", painted);
 		waitKey(0);
 
-		// if( ctrlPoints.size() >= 9){
-			Mat graySrc;
-			cvtColor(src, graySrc, CV_BGR2GRAY);
-			opa::Snake naka = opa::Snake( graySrc, ctrlPoints, Size( 15, 15 ));
-			naka.snaking();
-			break;
-		// }
-		// else{
-		// 	cout << "Need more control point" << endl;
-		// }
+		Mat graySrc;
+		cvtColor(src, graySrc, CV_BGR2GRAY);
+		opa::Snake naka = opa::Snake( graySrc, ctrlPoints, Size( 15, 15 ));
+		naka.snaking();
+		break;
 	}
 	waitKey(0);
 	return 0;
