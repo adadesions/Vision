@@ -24,7 +24,10 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char *argv[]){
-	Mat src = imread("./data/sampleGeometry.jpg", 1);
+	// Mat src = imread("./data/sampleGeometry2.jpg", 1);
+	Mat src = imread("./data/coins.jpg", 1);
+	// Mat src = imread("./data/alan.jpg", 1);
+	resize(src, src, Size(500, 500));
 	Probability prob = Probability( src );
 	prob.sample();
 

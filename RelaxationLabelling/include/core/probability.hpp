@@ -11,6 +11,7 @@ class Probability{
   private:
     cv::Mat srcImg;
     std::vector<int> bin;
+    std::vector<double> probBin;
     std::vector<int> initBin( int range = 32 );
 
 
@@ -27,6 +28,7 @@ class Probability{
 
   Probability::Probability( cv::Mat srcImg ){
     cv::cvtColor(srcImg, this->srcImg, CV_BGR2GRAY);
+    cv::imshow("Gray", this->srcImg);
   }
 
   //Private method
@@ -46,8 +48,11 @@ class Probability{
         bin[index] = bin[index] + 1;
       }
     }
-    for (auto i: bin)
-      std::cout << i << '\n';
+    for (auto i: bin){
+      this->probBin.push_back((double)i/(rows*cols));
+      std::cout << (double)i/(rows*cols) << '\n';
+    }
+
 
     return bin;
   }
@@ -78,13 +83,15 @@ class Probability{
     return (double)std::sqrt( variance(bin, mean, n) );
   }
 
-  // double Probability::PDF( double x, double mean, double variance ){
-  //   const double PI = 3.14159265359;
-  //
-  // }
+  double Probability::PDF( double x, double mean, double variance ){
+    const double PI = 3.14159265359;
+    double expo = std::exp(-std::pow(x - mean, 2)/(2*variance) );
+    double sRoot = std::sqrt(2*PI*variance);
+    return (double)expo/sRoot;
+  }
 
   void Probability::sample(){
-    this->bin = initBin( 32 );
+    this->bin = initBin( 1 );
     std::vector<int> *bin = &this->bin;
     cv::Mat img = this->srcImg;
     int n = img.rows * img.cols;
@@ -96,6 +103,30 @@ class Probability{
     std::cout << "Variance : " << std::to_string(var) << std::endl;
     std::cout << "SD : " << std::to_string(sd) << std::endl;
     std::cout << "n : " << std::to_string(n) << std::endl;
+
+    cv::Mat bgLabel(img.size(), CV_64F);
+    cv::Mat objLabel(img.size(), CV_64F);
+
+    // cv::Mat obj = img.clone();
+    for(int i=0; i < obj.rows; i++){
+      for(int j=0; j < obj.cols; j++){
+        int inten = (int)img.at<uchar>( j, i);
+        int binIndex = inten % bin->size();
+        double pdfx = PDF(binIndex, xbar, var);
+        pdfObj.at<double>(j ,i) = pdfx;
+        // Assign Labels
+        if( binIndex <= std::ceil(sd) - 1 ){
+          bgLabel.at<double>(j ,i) = pdfx;
+          objLabel.at<double>(j ,i) = 1 - pdfx;
+        }
+        else{
+          bgLabel.at<double>(j ,i) = 1 - pdfx;
+          objLabel.at<double>(j ,i) = pdfx;
+        }
+      }
+    }
+    cv::imshow("Object Label", objLabel);
+    cv::imshow("BG Label", bgLabel);
   }
 
 #endif
